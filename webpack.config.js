@@ -40,6 +40,7 @@ module.exports = function (env) {
         plugins: [
             // 独立打包
             new ExtracTextPlugin('styles.css'),
+            // 设置常用固定文件打包位置
             new webpack.optimize.CommonsChunkPlugin({
                 name: ['vender', 'manifest']
             }),
