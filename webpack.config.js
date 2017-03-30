@@ -3,13 +3,14 @@ var path = require('path');
 var ExtracTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
-
 module.exports = function (env) {
     return {
         // 入口文件
         entry: {
+            // 主要文件，经常改动的代码的打包
             main: './src/index.js',
-            vendor: 'moment'
+            // 包文件，很少改动的代码包
+            vendor: ['vue','vue-resource']
         },
         // 输出位置
         output: {
@@ -22,6 +23,9 @@ module.exports = function (env) {
                 "node_modules"
             ],
             extensions: [".js"],
+            alias: {
+                vue: 'vue/dist/vue.js'
+            }
         },
         module: {
             rules: [
@@ -32,8 +36,12 @@ module.exports = function (env) {
                     })
                 },
                 {
-                    test: /\.jsx$/,
-                    loader: "babel-loader",
+                    test: /\.js$/,
+                    loader: "babel-loader"
+                },
+                {
+                    test: /\.vue$/,
+                    loader: "vue-loader"
                 }
             ]
         },
@@ -46,7 +54,18 @@ module.exports = function (env) {
             }),
             new HtmlWebpackPlugin({
                 template: './index.html'
-            })
+            }),
+            // 线上环境设置
+            // new webpack.DefinePlugin({
+            //     'process.env': {
+            //         NODE_ENV: JSON.stringify('production')
+            //     }
+            // }),
+            // new webpack.optimize.UglifyJsPlugin({
+            //     compress: {
+            //         warnings: false
+            //     }
+            // })
         ]
     }
 }
