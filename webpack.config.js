@@ -3,6 +3,8 @@ var path = require('path');
 var ExtracTextPlugin = require('extract-text-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 
+process.noDeprecation = true;
+
 module.exports = function (env) {
     return {
         // 入口文件
@@ -31,23 +33,30 @@ module.exports = function (env) {
             rules: [
                 {
                     test: /\.css$/,
-                    use: ExtracTextPlugin.extract({
-                        use: 'css-loader'
-                    })
+                    use: ExtracTextPlugin.extract(
+                        { fallback: 'style-loader', use: 'css-loader' }
+                    )
                 },
                 {
                     test: /\.js$/,
-                    loader: "babel-loader"
+                    loader: "babel-loader",
+                    options: {
+                        compact: false
+                    }
                 },
                 {
                     test: /\.vue$/,
                     loader: "vue-loader"
+                },
+                {
+                    test: /\.(eot|woff|ttf|svg)$/,
+                    loader: "file-loader"
                 }
             ]
         },
         plugins: [
             // 独立打包
-            new ExtracTextPlugin('styles.css'),
+            new ExtracTextPlugin('styles.[chunkhash].css'),
             // 设置常用固定文件打包位置
             new webpack.optimize.CommonsChunkPlugin({
                 name: ['vender', 'manifest']
